@@ -45,10 +45,10 @@ class _PageTabs extends State<PageTabs> {
           children: const [Home(),History(), AddMedication(), Medications(), Profile()],
         ),
         bottomNavigationBar: BottomNavigationBar(
-            // unselectedLabelStyle: const TextStyle(fontSize: 12, color: Colors.lightBlue),
             selectedLabelStyle: const TextStyle(fontSize: 10, color: Colors.lightBlueAccent),
             showUnselectedLabels: false,
-            backgroundColor: Colors.white,
+            selectedIconTheme: const IconThemeData(size: 30, color: Colors.lightBlueAccent),
+            backgroundColor: Colors.transparent,
             elevation: 0,
             currentIndex: pageIndex,
             type: BottomNavigationBarType.fixed,
