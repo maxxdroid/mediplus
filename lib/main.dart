@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:mediplus/screens/lading_page.dart';
+import 'package:flutter/services.dart';
+import 'package:mediplus/screens/Page_tabs.dart';
+// import 'package:mediplus/screens/lading_page.dart';
 
 void main() {
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    systemNavigationBarColor: Colors.blueAccent, // navigation bar color
+    statusBarColor: Colors.blueAccent, // status bar color
+  ));
   runApp(const MyApp());
 }
 
@@ -15,10 +21,10 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const LandingPage(),
+      home: const PageTabs(),
     );
   }
 }
