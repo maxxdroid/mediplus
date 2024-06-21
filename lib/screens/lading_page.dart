@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:mediplus/screens/Page_tabs.dart';
 
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});
@@ -57,7 +59,9 @@ class LandingPage extends StatelessWidget {
               height: 30,
             ),
             ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Get.to(const PageTabs(), transition: Transition.cupertino, duration: const Duration(seconds: 1));
+                },
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blueAccent),
                 child: SizedBox(
