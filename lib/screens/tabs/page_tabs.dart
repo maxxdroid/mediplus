@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:mediplus/screens/add_medication.dart';
-import 'package:mediplus/screens/history.dart';
-import 'package:mediplus/screens/home.dart';
-import 'package:mediplus/screens/medications.dart';
-import 'package:mediplus/screens/profile.dart';
+import 'package:mediplus/screens/tabs/add_medication/add_medication.dart';
+import 'package:mediplus/screens/tabs/history.dart';
+import 'package:mediplus/screens/tabs/home.dart';
+import 'package:mediplus/screens/tabs/medications.dart';
+import 'package:mediplus/screens/tabs/profile.dart';
 
 class PageTabs extends StatefulWidget {
   const PageTabs({super.key});
