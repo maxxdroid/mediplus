@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:mediplus/auth/sign_in.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -159,7 +162,9 @@ class _SignUpState extends State<SignUp> {
                       children: [
                         const Text("Already have an account? "),
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            Get.off(const SignIn(), transition: Transition.cupertino, duration: const Duration(seconds: 1));
+                          },
                             child: const Text(
                           "Sign in!",
                           style: TextStyle(color: Colors.blue),
