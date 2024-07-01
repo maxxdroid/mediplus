@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:mediplus/screens/Page_tabs.dart';
+import 'package:mediplus/auth/sign_up.dart';
+import 'package:mediplus/screens/tabs/page_tabs.dart';
 
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});
@@ -60,7 +61,7 @@ class LandingPage extends StatelessWidget {
             ),
             ElevatedButton(
                 onPressed: () {
-                  Get.to(const PageTabs(), transition: Transition.cupertino, duration: const Duration(seconds: 1));
+                  Get.to(const SignUp(), transition: Transition.cupertino, duration: const Duration(seconds: 1));
                 },
                 style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blueAccent),

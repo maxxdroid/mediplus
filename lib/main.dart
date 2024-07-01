@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:mediplus/firebase_options.dart';
 import 'package:mediplus/screens/lading_page.dart';
+import 'package:firebase_core/firebase_core.dart';
 // import 'package:mediplus/screens/lading_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    systemNavigationBarColor: Colors.blueAccent, // navigation bar color
-    statusBarColor: Colors.blueAccent, // status bar color
+    systemNavigationBarColor: Colors.blueAccent,
+    statusBarColor: Colors.blueAccent,
   ));
   runApp(const MyApp());
 }
