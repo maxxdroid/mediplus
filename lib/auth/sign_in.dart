@@ -123,7 +123,7 @@ class _SignInState extends State<SignIn> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        const Text("Do'nt have an account? "),
+                        const Text("Don't have an account? "),
                         GestureDetector(
                             onTap: () {
                               Get.off(const SignUp(),

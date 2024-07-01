@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mediplus/database/db.dart';
+import 'package:mediplus/widgets/loading_alert.dart';
 
 class AddForm extends StatefulWidget {
   const AddForm({super.key});
@@ -12,6 +14,9 @@ class AddForm extends StatefulWidget {
 }
 
 class _AddFormState extends State<AddForm> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _typeController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
 
   bool imageSelected = false;
   late File _pic;
@@ -46,7 +51,10 @@ class _AddFormState extends State<AddForm> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text("Select from Gallery"),
-                    Icon(Icons.filter, color: Colors.blue,)
+                    Icon(
+                      Icons.filter,
+                      color: Colors.blue,
+                    )
                   ],
                 ),
                 onPressed: () {
@@ -59,7 +67,10 @@ class _AddFormState extends State<AddForm> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text("Capture with camera"),
-                    Icon(Icons.camera, color: Colors.blue,)
+                    Icon(
+                      Icons.camera,
+                      color: Colors.blue,
+                    )
                   ],
                 ),
                 onPressed: () {
@@ -111,24 +122,24 @@ class _AddFormState extends State<AddForm> {
               // Center(child: IconButton(onPressed: () {}, icon: const Icon(Icons.add_a_photo))),
               Center(
                 child: SizedBox(
-                height: height * 0.15,
-                // width: width * 0.7,
-                child: imageSelected
-                    ? InkWell(
-                        onTap: () {
-                          selectImage(context);
-                        },
-                        child: Image.file(_pic),
-                      )
-                    : IconButton(
-                        onPressed: () {
-                          selectImage(context);
-                        },
-                        icon: const Icon(
-                          Icons.camera_alt_rounded,
-                          size: 100,
-                        )),
-                            ),
+                  height: height * 0.3,
+                  // width: width * 0.7,
+                  child: imageSelected
+                      ? InkWell(
+                          onTap: () {
+                            selectImage(context);
+                          },
+                          child: Image.file(_pic),
+                        )
+                      : IconButton(
+                          onPressed: () {
+                            selectImage(context);
+                          },
+                          icon: const Icon(
+                            Icons.camera_alt_rounded,
+                            size: 100,
+                          )),
+                ),
               ),
               const Text("Medication Name"),
               Container(
@@ -140,13 +151,15 @@ class _AddFormState extends State<AddForm> {
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: TextFormField(
+                    controller: _nameController,
                     decoration: const InputDecoration(border: InputBorder.none),
                   ),
                 ),
               ),
-              const SizedBox(height: 20,),
-              const Text("Descrirption"),
-              const Text("Add a pill description if possible"),
+              const SizedBox(
+                height: 10,
+              ),
+              const Text("Medication Type"),
               Container(
                 height: 50,
                 width: width,
@@ -156,6 +169,7 @@ class _AddFormState extends State<AddForm> {
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: TextFormField(
+                    controller: _typeController,
                     decoration: const InputDecoration(border: InputBorder.none),
                   ),
                 ),
@@ -163,91 +177,60 @@ class _AddFormState extends State<AddForm> {
               const SizedBox(
                 height: 20,
               ),
-              const Text("Amount"),
-              const Text("How many pills do you have to take at once?"),
+              const Text("Descrirption"),
+              const Text("Add a pill description if possible"),
               Container(
-                  height: 50,
-                  width: width,
-                  decoration: BoxDecoration(
-                      color: Colors.lightBlue[100],
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                          onPressed: () {
-                            setState(() {
-                              amount++;
-                            });
-                          },
-                          icon: const Icon(
-                            Icons.add_circle,
-                            color: Colors.white,
-                          )),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Text(amount.toString()),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      const Text(" Pills"),
-                      IconButton(
-                          onPressed: () {
-                            setState(() {
-                              if (amount != 0) {
-                                amount--;
-                              }
-                            });
-                          },
-                          icon: const Icon(Icons.remove_circle))
-                    ],
-                  )),
-              const SizedBox(
-                height: 20,
-              ),
-              const Text("Duration"),
-              const Text("How many Days do you need to take the pills?"),
-              const Row(
-                children: [
-                  Text("Start Date:"),
-                  Text("15th, OCtober 2001")
-                ],
-              ),
-              const Row(
-                children: [
-                  Text("Start Date:"),
-                  Text("15th, OCtober 2001")
-                ],
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              const Text("Time"),
-              const Text("Add what time you need to take the pills"),
-              Container(
-                height: 60,
+                height: 150,
                 width: width,
                 decoration: BoxDecoration(
                     color: Colors.lightBlue[100],
                     borderRadius: BorderRadius.circular(10)),
-                child: const Padding(
-                  padding: EdgeInsets.all(20.0),
-                  child: Center(child: Text("7:00 am"))
-                ),
-              ),
-              Center(
-                child: Container(
-                  height: 40,
-                  width: width * 0.6,
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  decoration: BoxDecoration(
-                      color: Colors.blueGrey[50],
-                      borderRadius: BorderRadius.circular(10)),
-                  child: const Center(
-                    child: Text("Add Time"),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: TextFormField(
+                    controller: _descriptionController,
+                    maxLines: 5,
+                    decoration: const InputDecoration(border: InputBorder.none),
                   ),
                 ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: ElevatedButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) {
+                          return const LoadingAlert(
+                            message: 'Saving Medication',
+                          );
+                        });
+                      Map<String, dynamic> medication = {
+                        "name": _nameController.text,
+                        "type": _typeController.text,
+                        "description": _descriptionController.text
+                      };
+                      // Get.to(const SignUp(), transition: Transition.cupertino, duration: const Duration(seconds: 1));
+                      DatabaseMethods().addMedication(medication, _pic);
+                    },
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blueAccent),
+                    child: SizedBox(
+                      width: width * 0.1,
+                      height: 30,
+                      child: const Center(
+                        child: Text(
+                          "Save",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w900),
+                        ),
+                      ),
+                    )),
               ),
             ],
           ),

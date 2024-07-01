@@ -41,7 +41,6 @@ class _PageTabs extends State<PageTabs> {
       child: Scaffold(
         body: PageView(
           controller: pageController,
-          // physics: ,
           children: const [Home(),History(), AddMedication(), Medications(), Profile()],
         ),
         bottomNavigationBar: BottomNavigationBar(
