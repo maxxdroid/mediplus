@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mediplus/auth/sign_up.dart';
-import 'package:mediplus/screens/tabs/page_tabs.dart';
 
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});

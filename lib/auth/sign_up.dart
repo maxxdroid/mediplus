@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
+import 'package:mediplus/auth/auth.dart';
 import 'package:mediplus/auth/sign_in.dart';
+import 'package:mediplus/widgets/loading_alert.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -11,6 +12,14 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+  final TextEditingController _eamilController = TextEditingController();
+  bool obscured = true;
+  bool confirmObscured = true;
+
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -21,13 +30,14 @@ class _SignUpState extends State<SignUp> {
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Column(
             children: [
-              SizedBox(
-                height: height * .1
-              ),
+              SizedBox(height: height * .1),
               const Center(
-                child:Text(
+                child: Text(
                   "Sign Up",
-                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.blue),
+                  style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue),
                 ),
               ),
               Center(
@@ -37,22 +47,24 @@ class _SignUpState extends State<SignUp> {
                 ),
               ),
               const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Medi",
-                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.blue),
-                ),
-                Text(
-                  "+",
-                  style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.red
-                    ),
-                ),
-              ],
-            ),
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Medi",
+                    style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue),
+                  ),
+                  Text(
+                    "+",
+                    style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red),
+                  ),
+                ],
+              ),
               Container(
                 margin: const EdgeInsets.symmetric(vertical: 20),
                 height: 50,
@@ -74,6 +86,7 @@ class _SignUpState extends State<SignUp> {
                           minHeight: 0,
                         ),
                       ),
+                      controller: _nameController,
                     ),
                   ),
                 ),
@@ -98,6 +111,7 @@ class _SignUpState extends State<SignUp> {
                           minHeight: 0,
                         ),
                       ),
+                      controller: _eamilController,
                     ),
                   ),
                 ),
@@ -113,17 +127,34 @@ class _SignUpState extends State<SignUp> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: TextFormField(
-                      decoration: const InputDecoration(
+                      obscureText: obscured,
+                      decoration: InputDecoration(
                         labelText: "  Password",
-                        labelStyle: TextStyle(fontSize: 13),
+                        labelStyle: const TextStyle(fontSize: 13),
                         border: InputBorder.none,
-                        prefixIcon:
-                            Icon(Icons.lock_open_rounded, color: Colors.blue),
-                        prefixIconConstraints: BoxConstraints(
+                        suffixIcon: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                if (obscured) {
+                                  obscured = false;
+                                } else {
+                                  obscured = true;
+                                }
+                              });
+                            },
+                            icon: obscured
+                                ? const Icon(Icons.visibility,
+                                    color: Colors.grey)
+                                : const Icon(Icons.visibility_off,
+                                    color: Colors.grey)),
+                        prefixIcon: const Icon(Icons.lock_open_rounded,
+                            color: Colors.blue),
+                        prefixIconConstraints: const BoxConstraints(
                           minWidth: 0,
                           minHeight: 0,
                         ),
                       ),
+                      controller: _passwordController,
                     ),
                   ),
                 ),
@@ -138,17 +169,36 @@ class _SignUpState extends State<SignUp> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: TextFormField(
-                      decoration: const InputDecoration(
+                      obscureText: confirmObscured,
+                      decoration: InputDecoration(
                         labelText: "  Confirm Password",
-                        labelStyle: TextStyle(fontSize: 13),
+                        labelStyle: const TextStyle(fontSize: 13),
                         border: InputBorder.none,
-                        prefixIcon: Icon(Icons.lock_outline_rounded,
+                        prefixIcon: const Icon(Icons.lock_outline_rounded,
                             color: Colors.blue),
-                        prefixIconConstraints: BoxConstraints(
+                        suffixIcon: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                if (confirmObscured) {
+                                  confirmObscured = false;
+                                } else {
+                                  confirmObscured = true;
+                                }
+                              });
+                            },
+                            icon: confirmObscured
+                                ? const Icon(
+                                    Icons.visibility,
+                                    color: Colors.grey,
+                                  )
+                                : const Icon(Icons.visibility_off,
+                                    color: Colors.grey)),
+                        prefixIconConstraints: const BoxConstraints(
                           minWidth: 0,
                           minHeight: 0,
                         ),
                       ),
+                      controller: _confirmPasswordController,
                     ),
                   ),
                 ),
@@ -162,13 +212,15 @@ class _SignUpState extends State<SignUp> {
                       children: [
                         const Text("Already have an account? "),
                         GestureDetector(
-                          onTap: () {
-                            Get.off(const SignIn(), transition: Transition.cupertino, duration: const Duration(seconds: 1));
-                          },
+                            onTap: () {
+                              Get.off(const SignIn(),
+                                  transition: Transition.cupertino,
+                                  duration: const Duration(seconds: 1));
+                            },
                             child: const Text(
-                          "Sign in!",
-                          style: TextStyle(color: Colors.blue),
-                        ))
+                              "Sign in!",
+                              style: TextStyle(color: Colors.blue),
+                            ))
                       ],
                     )),
               ),
@@ -177,7 +229,17 @@ class _SignUpState extends State<SignUp> {
               ),
               ElevatedButton(
                   onPressed: () {
-                    // Get.to(const SignUp(), transition: Transition.cupertino, duration: const Duration(seconds: 1));
+                    showDialog(
+                        context: context,
+                        builder: (_) {
+                          return const LoadingAlert(
+                            message: 'Creating your account...',
+                          );
+                        });
+                    AuthMethods().signUp(
+                        _eamilController.text.toString(),
+                        _passwordController.text.trim(),
+                        _nameController.text.toString());
                   },
                   style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blueAccent),

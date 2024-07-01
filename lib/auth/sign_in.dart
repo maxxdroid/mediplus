@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mediplus/auth/auth.dart';
 import 'package:mediplus/auth/sign_up.dart';
+import 'package:mediplus/widgets/loading_alert.dart';
 
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
@@ -10,6 +12,10 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _eamilController = TextEditingController();
+  bool obscured = true;
+
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -20,13 +26,14 @@ class _SignInState extends State<SignIn> {
           padding: const EdgeInsets.symmetric(horizontal: 20.0),
           child: Column(
             children: [
-              SizedBox(
-                height: height * .15
-              ),
+              SizedBox(height: height * .15),
               const Center(
-                child:Text(
+                child: Text(
                   "Sign In",
-                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.blue),
+                  style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue),
                 ),
               ),
               Center(
@@ -36,23 +43,27 @@ class _SignInState extends State<SignIn> {
                 ),
               ),
               const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Medi",
-                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.blue),
-                ),
-                Text(
-                  "+",
-                  style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.red
-                    ),
-                ),
-              ],
-            ),
-            SizedBox(height: 20,),
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Medi",
+                    style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue),
+                  ),
+                  Text(
+                    "+",
+                    style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 20,
+              ),
               Container(
                 height: 50,
                 decoration: BoxDecoration(
@@ -73,6 +84,7 @@ class _SignInState extends State<SignIn> {
                           minHeight: 0,
                         ),
                       ),
+                      controller: _eamilController,
                     ),
                   ),
                 ),
@@ -99,6 +111,7 @@ class _SignInState extends State<SignIn> {
                           minHeight: 0,
                         ),
                       ),
+                      controller: _passwordController,
                     ),
                   ),
                 ),
@@ -112,13 +125,15 @@ class _SignInState extends State<SignIn> {
                       children: [
                         const Text("Do'nt have an account? "),
                         GestureDetector(
-                          onTap: () {
-                            Get.off(const SignUp(), transition: Transition.cupertino, duration: const Duration(seconds: 1));
-                          },
+                            onTap: () {
+                              Get.off(const SignUp(),
+                                  transition: Transition.cupertino,
+                                  duration: const Duration(seconds: 1));
+                            },
                             child: const Text(
-                          "Sign up toaday!",
-                          style: TextStyle(color: Colors.blue),
-                        ))
+                              "Sign up toaday!",
+                              style: TextStyle(color: Colors.blue),
+                            ))
                       ],
                     )),
               ),
@@ -127,7 +142,14 @@ class _SignInState extends State<SignIn> {
               ),
               ElevatedButton(
                   onPressed: () {
-                    // Get.to(const SignUp(), transition: Transition.cupertino, duration: const Duration(seconds: 1));
+                    showDialog(
+                        context: context,
+                        builder: (_) {
+                          return const LoadingAlert(
+                            message: 'Logging in please wait...',
+                          );
+                        });
+                    AuthMethods().signIn(_eamilController.text, _passwordController.text);
                   },
                   style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blueAccent),

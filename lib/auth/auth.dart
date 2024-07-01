@@ -1,28 +1,97 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 import 'package:mediplus/database/db.dart';
 import 'package:mediplus/functions/shared_pref_helper.dart';
+import 'package:mediplus/screens/tabs/page_tabs.dart';
 
 class AuthMethods {
   FirebaseAuth auth = FirebaseAuth.instance;
 
-  signUp(String email, String password) async {
-    late User? firebaseUser;
-    await auth.createUserWithEmailAndPassword(email: email, password: password);
-    firebaseUser = auth.currentUser;
-    Map<String, dynamic> userInfoMap = {
-        "Email": email,
-        "Name": "name",
-        "imgUrl": "",
-        "User Id" : firebaseUser!.uid,
-      };
-      DatabaseMethods().addUserInfo(firebaseUser.uid, userInfoMap);
-      Sharedprefhelper().saveUserID(firebaseUser.uid);
+  signUp(String email, String password, String name) async {
+    try {
+      UserCredential userCredential = await auth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      User? firebaseUser = userCredential.user;
+
+      if (firebaseUser != null) {
+        Map<String, dynamic> userInfoMap = {
+          "Email": email,
+          "Name": name,
+          "imgUrl": "",
+          "User Id": firebaseUser.uid,
+        };
+
+        await DatabaseMethods().addUserInfo(firebaseUser.uid, userInfoMap);
+        await Sharedprefhelper().saveUserID(firebaseUser.uid);
+        Get.to(const PageTabs(),
+            transition: Transition.cupertino,
+            duration: const Duration(seconds: 1));
+      }
+    } catch (error) {
+      errorHandling(error);
+    }
   }
 
-  signIn(String email, String password) {
-    late User? firebaseUser;
-    auth.signInWithEmailAndPassword(email: email, password: password);
-    firebaseUser = auth.currentUser;
-    Sharedprefhelper().saveUserID(firebaseUser!.uid);
+  Future<void> signIn(String email, String password) async {
+    try {
+      UserCredential userCredential = await auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      User? firebaseUser = userCredential.user;
+
+      if (firebaseUser != null) {
+        await Sharedprefhelper().saveUserID(firebaseUser.uid);
+        Get.to(
+          const PageTabs(),
+          transition: Transition.cupertino,
+          duration: const Duration(seconds: 1),
+        );
+      }
+    } catch (error) {
+      errorHandling(error);
+    }
+  }
+
+  void errorHandling(dynamic error) {
+    String errorMessage;
+
+    switch (error.code) {
+      case "email-already-in-use":
+        errorMessage = "Email already used. Go to login page.";
+        Get.back();
+        break;
+      case "wrong-password":
+        errorMessage = "Wrong email/password combination.";
+        Get.back();
+        break;
+      case "user-not-found":
+        errorMessage = "No user found with this email.";
+        Get.back();
+        break;
+      case "user-disabled":
+        errorMessage = "User disabled.";
+        Get.back();
+        break;
+      case "too-many-requests":
+        errorMessage = "Too many requests to log into this account.";
+        Get.back();
+        break;
+      case "operation-not-allowed":
+        errorMessage = "Server error, please try again later.";
+        Get.back();
+        break;
+      case "invalid-email":
+        errorMessage = "Email address is invalid.";
+        Get.back();
+        break;
+      default:
+        errorMessage = "Sign up error, please try again later.";
+        Get.back();
+    }
+    Fluttertoast.showToast(msg: errorMessage);
   }
 }
