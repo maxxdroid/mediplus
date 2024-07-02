@@ -15,8 +15,16 @@ class AddForm extends StatefulWidget {
 
 class _AddFormState extends State<AddForm> {
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _typeController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+
+  String? _selectedMedicationType;
+  final List<String> _medicationTypes = [
+    'Tablets',
+    'Capsules',
+    'Liquids',
+    'Topical',
+    'Inhalers'
+  ];
 
   bool imageSelected = false;
   late File _pic;
@@ -164,13 +172,28 @@ class _AddFormState extends State<AddForm> {
                 height: 50,
                 width: width,
                 decoration: BoxDecoration(
-                    color: Colors.lightBlue[100],
-                    borderRadius: BorderRadius.circular(10)),
+                  color: Colors.lightBlue[100],
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: TextFormField(
-                    controller: _typeController,
-                    decoration: const InputDecoration(border: InputBorder.none),
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: DropdownButtonFormField<String>(
+                    value: _selectedMedicationType,
+                    decoration: const InputDecoration(
+                      border: InputBorder.none,
+                    ),
+                    items: _medicationTypes.map((String type) {
+                      return DropdownMenuItem<String>(
+                        value: type,
+                        child: Text(type),
+                      );
+                    }).toList(),
+                    onChanged: (newValue) {
+                      setState(() {
+                        _selectedMedicationType = newValue;
+                      });
+                    },
+                    hint: const Text('Select a medication type'),
                   ),
                 ),
               ),
@@ -202,15 +225,15 @@ class _AddFormState extends State<AddForm> {
                 child: ElevatedButton(
                     onPressed: () {
                       showDialog(
-                        context: context,
-                        builder: (_) {
-                          return const LoadingAlert(
-                            message: 'Saving Medication',
-                          );
-                        });
+                          context: context,
+                          builder: (_) {
+                            return const LoadingAlert(
+                              message: 'Saving Medication',
+                            );
+                          });
                       Map<String, dynamic> medication = {
                         "name": _nameController.text,
-                        "type": _typeController.text,
+                        "type": _selectedMedicationType,
                         "description": _descriptionController.text
                       };
                       // Get.to(const SignUp(), transition: Transition.cupertino, duration: const Duration(seconds: 1));

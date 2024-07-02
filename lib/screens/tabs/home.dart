@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mediplus/functions/shared_pref_helper.dart';
 import 'package:mediplus/models/medication.dart';
 import 'package:mediplus/screens/details_page.dart';
 
@@ -12,6 +13,62 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  List<String> _medicationTypes = [];
+  bool inCart = false;
+  List<Medication> cart = [];
+  int cartItems = 0;
+
+  @override
+  void initState() {
+    _loadcart();
+    super.initState();
+    fetchMedicationTypes();
+  }
+
+  // Future<void> _getUserId() async {
+  //   userID = await Sharedprefhelper().getUserID();
+  // }
+
+  Future<void> _loadcart() async {
+    cart = await Sharedprefhelper().getCurrentMedicationCart();
+    setState(() {
+      cartItems = cart.length;
+    });
+  }
+
+  Future<void> fetchMedicationTypes() async {
+    QuerySnapshot<Map<String, dynamic>> snapshot =
+        await FirebaseFirestore.instance.collection("medication").get();
+    List<String> types =
+        snapshot.docs.map((doc) => doc['type'] as String).toSet().toList();
+    setState(() {
+      _medicationTypes = types;
+    });
+  }
+
+  StreamBuilder<QuerySnapshot<Map<String, dynamic>>> medications(
+      BuildContext context, String type) {
+    return StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection("medication")
+            .where("type", isEqualTo: type)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return ListView.builder(
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                itemCount: snapshot.data!.docs.length,
+                itemBuilder: (context, index) {
+                  Medication medication =
+                      Medication.fromJson(snapshot.data!.docs[index].data());
+                  return medicationcard(medication, context);
+                });
+          }
+          return const SizedBox();
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -24,98 +81,116 @@ class _HomeState extends State<Home> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text("Fri, 21st June"),
-            const Text(
-              "Today's Plan",
-              style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-            ),
-            const Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: const Text("08:00 am"),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            GestureDetector(
-              onTap: () {
-                Get.to(const DetailsPage(),
-                    transition: Transition.cupertino,
-                    duration: const Duration(seconds: 1));
-              },
-              child: Card(
-                elevation: 0,
-                color: Colors.lightBlue[50],
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Image.asset(
-                        "assets/images/pill1.png",
-                        width: 100,
-                        height: 50,
-                      ),
-                      const Column(
-                        children: [
-                          Text(
-                            "Vitamin C pills",
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          Text("1 pill per Day")
-                        ],
-                      ),
-                      Icon(Icons.navigate_next)
-                    ],
+            SizedBox(
+              width: width,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const SizedBox(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Medi",
+                          style: TextStyle(
+                              fontSize: 26,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue),
+                        ),
+                        Text(
+                          "+",
+                          style: TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.red),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+                  Container(
+                    height: 40,
+                    width: width * 0.5,
+                    decoration: BoxDecoration(
+                        color: Colors.lightBlue[100],
+                        borderRadius: BorderRadius.circular(10)),
+                    child: TextFormField(
+                      // controller: _typeController,
+                      decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.only(bottom: 10, left: 10),
+                          suffixIconConstraints: BoxConstraints(
+                            minWidth: 0,
+                            minHeight: 3,
+                          ),
+                          suffixIcon: Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 5.0),
+                            child: Icon(
+                              Icons.search,
+                            ),
+                          ),
+                          border: InputBorder.none),
+                    ),
+                  ),
+                  Stack(
+                    children: [
+                      IconButton(
+                          onPressed: () {},
+                          icon: const Icon(
+                            Icons.medical_services,
+                            color: Colors.blue,
+                          )),
+                      Positioned(bottom: 0, right: 0, child: Text("$cartItems"))
+                    ],
+                  )
+                ],
               ),
             ),
-            SizedBox(
-              height: height * .6,
-              child: medications(context),
-            )
+            ..._medicationTypes.map((type) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 5.0),
+                      child: Text(
+                        type,
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: height * .25,
+                    child: medications(context, type),
+                  ),
+                ],
+              );
+            }),
           ],
         ),
       )),
     );
   }
 
-  StreamBuilder<QuerySnapshot<Map<String, dynamic>>> medications(
-      BuildContext context) {
-    return StreamBuilder(
-        stream: FirebaseFirestore.instance.collection("medication").snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10.0,
-                  mainAxisSpacing: 10.0,
-                  childAspectRatio: 3 / 4,
-                ),
-                itemCount: snapshot.data!.size,
-                itemBuilder: (context, index) {
-                  Medication medication =
-                      Medication.fromJson(snapshot.data!.docs[index].data());
-                  return medicationcard(medication, context);
-                });
-          }
-          return SizedBox();
-        });
-  }
-
   Widget medicationcard(Medication medication, BuildContext context) {
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
-    return Card(
+    return InkWell(
+      onTap: () {
+        Get.to(DetailsPage(medication: medication));
+      },
       child: Column(
         children: [
           SizedBox(
-            height: height * .2,
+            height: height * .22,
             width: width * .4,
-            child: Image.network(
-              medication.image,
-              fit: BoxFit.cover,
+            child: Card(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.network(
+                  medication.image,
+                  fit: BoxFit.cover,
+                ),
+              ),
             ),
           ),
           Text(medication.name)

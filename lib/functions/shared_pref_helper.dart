@@ -1,22 +1,36 @@
 import 'dart:convert';
 
-import 'package:mediplus/models/medicine.dart';
+import 'package:mediplus/models/medication.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Sharedprefhelper{
   static String userIDKey = 'UserIdKey';
 
-  Future<void> saveMedication(List<Medicine> medicines) async {
+  Future<void> saveMedication(List<Medication> medicines) async {
     final prefs = await SharedPreferences.getInstance();
     final medicineList = medicines.map((medicine) => jsonEncode(medicine.toJson())).toList();
     await prefs.setStringList('medications', medicineList);
   }
 
-  Future<List<Medicine>> getCurrentMedications() async {
+  Future<List<Medication>> getCurrentMedications() async {
     final prefs = await SharedPreferences.getInstance();
     final medicineList = prefs.getStringList('medications') ?? [];
     return medicineList
-        .map((json) => Medicine.fromJson(jsonDecode(json)))
+        .map((json) => Medication.fromJson(jsonDecode(json)))
+        .toList();  
+  }
+
+  Future<void> saveMedicationCart(List<Medication> medicines) async {
+    final prefs = await SharedPreferences.getInstance();
+    final medicineList = medicines.map((medicine) => jsonEncode(medicine.toJson())).toList();
+    await prefs.setStringList('cart', medicineList);
+  }
+
+  Future<List<Medication>> getCurrentMedicationCart() async {
+    final prefs = await SharedPreferences.getInstance();
+    final medicineList = prefs.getStringList('cart') ?? [];
+    return medicineList
+        .map((json) => Medication.fromJson(jsonDecode(json)))
         .toList();  
   }
 

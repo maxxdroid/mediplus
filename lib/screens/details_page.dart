@@ -1,14 +1,66 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mediplus/functions/shared_pref_helper.dart';
+import 'package:mediplus/models/medication.dart';
 
 class DetailsPage extends StatefulWidget {
-  const DetailsPage({super.key});
+  final Medication medication;
+
+  const DetailsPage({super.key, required this.medication});
 
   @override
   State<DetailsPage> createState() => _DetailsPageState();
 }
 
 class _DetailsPageState extends State<DetailsPage> {
+  bool inCart = false;
+  List<Medication> cart = [];
+  int cartItems = 0;
+  String? userID = "";
+
+  @override
+  void initState() {
+    _getUserId();
+    _loadcart();
+    super.initState();
+  }
+
+  Future<void> _getUserId() async {
+    userID = await Sharedprefhelper().getUserID();
+  }
+
+  Future<void> _loadcart() async {
+    cart = await Sharedprefhelper().getCurrentMedicationCart();
+    setState(() {
+      inCart = cart.contains(widget.medication);
+      cartItems = cart.length;
+    });
+  }
+
+  void add() async {
+    setState(() {
+      if (!inCart) {
+        inCart = true;
+        cart.add(widget.medication);
+        cartItems = cart.length;
+      }
+    });
+    await Sharedprefhelper().saveMedicationCart(cart);
+  }
+
+  void remove() async {
+    setState(() {
+      if (inCart) {
+        inCart = false;
+        cart.remove(widget.medication);
+        cartItems = cart.length;
+      }
+    });
+    await Sharedprefhelper().saveMedicationCart(cart);
+  }
+
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -19,7 +71,7 @@ class _DetailsPageState extends State<DetailsPage> {
           SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.only(
-                  left: 20, right: 20, top: 20, bottom: 10),
+                  left: 20, right: 20, top: 30, bottom: 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -28,23 +80,58 @@ class _DetailsPageState extends State<DetailsPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        IconButton(onPressed: () {
-                          Get.back();
-                        }, icon: const Icon(Icons.arrow_back_ios_rounded)),
-                        const Text("Edit", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),)
+                        const SizedBox(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                "Medi",
+                                style: TextStyle(
+                                    fontSize: 26,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blue),
+                              ),
+                              Text(
+                                "+",
+                                style: TextStyle(
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.red),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Stack(
+                          children: [
+                            IconButton(
+                                onPressed: () {},
+                                icon: const Icon(
+                                  Icons.medical_services,
+                                  color: Colors.blue,
+                                )),
+                            Positioned(
+                                bottom: 0, right: 0, child: Text("$cartItems"))
+                          ],
+                        ),
                       ],
                     ),
                   ),
                   SizedBox(
                     height: height * 0.5,
-                    child: Image.asset(
-                      "assets/images/pill1.png",
+                    width: width,
+                    child: Image.network(
+                      fit: BoxFit.cover,
+                      widget.medication.image,
                     ),
                   ),
-                  const Center(
+                  Center(
                     child: Padding(
                       padding: EdgeInsets.all(8.0),
-                      child: Text("Vitamin C pills", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),),
+                      child: Text(
+                        widget.medication.name,
+                        style: TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
                   const Padding(
@@ -60,6 +147,25 @@ class _DetailsPageState extends State<DetailsPage> {
                             vertical: 20.0, horizontal: 20),
                         child: const Text("1 pill everyday at 08:00pm")),
                   ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text("Description"),
+                  ),
+                  Card(
+                    elevation: 0,
+                    color: Colors.lightBlue[50],
+                    child: Container(
+                        width: width,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 20.0, horizontal: 20),
+                        child: Text(widget.medication.description)),
+                  ),
+                  SizedBox(
+                    height: height * .1,
+                  ),
                 ],
               ),
             ),
@@ -73,18 +179,20 @@ class _DetailsPageState extends State<DetailsPage> {
                 children: [
                   ElevatedButton(
                       onPressed: () {
+                        remove();
                         // Get.to(const PageTabs(), transition: Transition.cupertino, duration: const Duration(seconds: 1));
                       },
                       style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)),
-                          backgroundColor: Colors.blueGrey[100]),
+                          backgroundColor:
+                              inCart ? Colors.blue : Colors.blueGrey[100]),
                       child: SizedBox(
                         width: width * 0.3,
                         height: 50,
                         child: const Center(
                           child: Text(
-                            "Skip",
+                            "Remove",
                             style: TextStyle(
                               fontSize: 18,
                               color: Colors.white,
@@ -94,18 +202,21 @@ class _DetailsPageState extends State<DetailsPage> {
                       )),
                   ElevatedButton(
                       onPressed: () {
+                        add();
                         // Get.to(const PageTabs(), transition: Transition.cupertino, duration: const Duration(seconds: 1));
                       },
                       style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10)),
-                          backgroundColor: Colors.blueAccent),
+                          backgroundColor: inCart
+                              ? Colors.blueGrey[100]
+                              : Colors.blueAccent),
                       child: SizedBox(
                         width: width * 0.3,
                         height: 50,
                         child: const Center(
                           child: Text(
-                            "Done",
+                            "Add",
                             style: TextStyle(
                               fontSize: 18,
                               color: Colors.white,
