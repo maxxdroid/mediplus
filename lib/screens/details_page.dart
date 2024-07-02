@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mediplus/functions/shared_pref_helper.dart';
 import 'package:mediplus/models/medication.dart';
+import 'package:mediplus/screens/cart.dart';
 
 class DetailsPage extends StatefulWidget {
   final Medication medication;
@@ -104,13 +105,21 @@ class _DetailsPageState extends State<DetailsPage> {
                         Stack(
                           children: [
                             IconButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Get.to(const Cart());
+                                },
                                 icon: const Icon(
                                   Icons.medical_services,
                                   color: Colors.blue,
                                 )),
                             Positioned(
-                                bottom: 0, right: 0, child: Text("$cartItems"))
+                                bottom: 0,
+                                right: 0,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      right: 5.0, bottom: 5),
+                                  child: Text("$cartItems"),
+                                ))
                           ],
                         ),
                       ],
