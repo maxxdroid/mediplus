@@ -1,23 +1,17 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:mediplus/functions/shared_pref_helper.dart';
 import 'package:mediplus/models/user.dart';
 
 class Profile extends StatefulWidget {
-  LocalUser user;
-  Profile({super.key, required this.user});
+  final LocalUser user;
+  const Profile({super.key, required this.user});
 
   @override
   State<Profile> createState() => _ProfileState();
 }
 
 class _ProfileState extends State<Profile> {
-  LocalUser? user =
-      LocalUser(name: "", role: "", imageUrl: "", userID: "", email: "");
-
   @override
   void initState() {
-    _getUser();
     super.initState();
   }
 
@@ -35,12 +29,6 @@ class _ProfileState extends State<Profile> {
   //     print('Error fetching user info: $e');
   //   }
   // }
-
-  Future<void> _getUser() async {
-    user = await Sharedprefhelper().getUser();
-    print('.............${user!.userID}');
-    print('.............${user!.email}');
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +57,7 @@ class _ProfileState extends State<Profile> {
             ),
             const SizedBox(height: 10),
             Text(
-              user!.name,
+              widget.user.name,
               style: TextStyle(
                   color: Colors.lightBlueAccent[200],
                   letterSpacing: 2,
@@ -101,7 +89,7 @@ class _ProfileState extends State<Profile> {
                   width: 10,
                 ),
                 Text(
-                  user!.email,
+                  widget.user.name,
                   style: TextStyle(
                       color: Colors.grey[400], fontSize: 18, letterSpacing: 1),
                 ),

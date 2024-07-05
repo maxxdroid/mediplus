@@ -99,7 +99,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
     return StreamBuilder(
         stream: FirebaseFirestore.instance
             .collection("medication")
-            .limit(3)
+            .limit(10)
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
@@ -183,6 +183,25 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
             ],
           ),
         ),
+        InkWell(
+          onTap: () {
+            Get.to(const OrderMedication());
+          },
+          child: Stack(
+            children: [
+              ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.asset("assets/images/buy.jpg")),
+              Card(
+                color: Colors.lightBlue[50],
+                child: const Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text("Add Medication"),
+                ),
+              )
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -204,7 +223,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                   SizedBox(
+                  SizedBox(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -215,7 +234,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                               fontWeight: FontWeight.bold,
                               color: Colors.blueAccent[700]),
                         ),
-                        Text(
+                        const Text(
                           "+",
                           style: TextStyle(
                               fontSize: 32,
@@ -315,30 +334,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                 child: popularMedications(context),
               ),
             ),
-            // ..._medicationTypes.map((type) {
-            //   return Column(
-            //     crossAxisAlignment: CrossAxisAlignment.start,
-            //     children: [
-            //       SizedBox(
-            //         child: Padding(
-            //           padding: const EdgeInsets.only(left: 5.0),
-            //           child: Text(
-            //             type,
-            //             style: const TextStyle(
-            //                 fontSize: 22, fontWeight: FontWeight.bold),
-            //           ),
-            //         ),
-            //       ),
-            //       Padding(
-            //         padding: const EdgeInsets.only(bottom: 20.0),
-            //         child: SizedBox(
-            //           height: height * .25,
-            //           child: medications(context, type),
-            //         ),
-            //       ),
-            //     ],
-            //   );
-            // }),
           ],
         ),
       )),

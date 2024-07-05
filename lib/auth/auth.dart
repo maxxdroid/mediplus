@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:mediplus/database/db.dart';
 import 'package:mediplus/functions/shared_pref_helper.dart';
 import 'package:mediplus/models/user.dart';
-import 'package:mediplus/screens/tabs/page_tabs.dart';
+import 'package:mediplus/screens/tabs/admin_page_tabs.dart';
 
 class AuthMethods {
   FirebaseAuth auth = FirebaseAuth.instance;

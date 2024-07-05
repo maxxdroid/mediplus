@@ -3,20 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:mediplus/functions/shared_pref_helper.dart';
 import 'package:mediplus/models/user.dart';
 import 'package:mediplus/screens/tabs/add_medication/add.dart';
-import 'package:mediplus/screens/tabs/home.dart';
+import 'package:mediplus/screens/tabs/admin_home.dart';
 import 'package:mediplus/screens/tabs/medications.dart';
 import 'package:mediplus/screens/tabs/orders.dart';
 import 'package:mediplus/screens/tabs/profile.dart';
 
-class PageTabs extends StatefulWidget {
-  LocalUser user;
-  PageTabs({super.key, required this.user});
+class UserPageTabs extends StatefulWidget {
+  final LocalUser user;
+  const UserPageTabs({super.key, required this.user});
 
   @override
-  State<PageTabs> createState() => _PageTabsState();
+  State<UserPageTabs> createState() => _UserPageTabs();
 }
 
-class _PageTabsState extends State<PageTabs> {
+class _UserPageTabs extends State<UserPageTabs> {
   String userID = "";
   int pageIndex = 0;
   late PageController pageController;
@@ -82,7 +82,9 @@ class _PageTabsState extends State<PageTabs> {
             Medications(
               userID: userID,
             ),
-            Profile(user: widget.user,),
+            Profile(
+              user: widget.user,
+            ),
           ],
         ),
         bottomNavigationBar: BottomNavigationBar(
