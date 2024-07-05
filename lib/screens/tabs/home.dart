@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mediplus/functions/shared_pref_helper.dart';
 import 'package:mediplus/models/medication.dart';
+import 'package:mediplus/models/user.dart';
 import 'package:mediplus/screens/cart.dart';
 import 'package:mediplus/screens/details_page.dart';
+import 'package:mediplus/screens/order_medication.dart';
+import 'package:mediplus/screens/tabs/medications.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -13,28 +16,43 @@ class Home extends StatefulWidget {
   State<Home> createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> with WidgetsBindingObserver {
   List<String> _medicationTypes = [];
   bool inCart = false;
   List<Medication> cart = [];
   int cartItems = 0;
+  bool isVisible = true;
+  LocalUser? user =
+      LocalUser(name: "", role: "", imageUrl: "", userID: "", email: "");
 
   @override
   void initState() {
-    _loadcart();
     super.initState();
+    _getUser();
+    WidgetsBinding.instance.addObserver(this);
+    _loadcart();
     fetchMedicationTypes();
   }
 
-  // Future<void> _getUserId() async {
-  //   userID = await Sharedprefhelper().getUserID();
-  // }
+  Future<void> _getUser() async {
+    user = await Sharedprefhelper().getUser();
+    print('Error fetching user info: ${user!.email}');
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed && isVisible) {
+      _loadcart();
+    }
+  }
 
   Future<void> _loadcart() async {
     cart = await Sharedprefhelper().getCurrentMedicationCart();
-    setState(() {
-      cartItems = cart.length;
-    });
+    if (mounted) {
+      setState(() {
+        cartItems = cart.length;
+      });
+    }
   }
 
   Future<void> fetchMedicationTypes() async {
@@ -45,6 +63,12 @@ class _HomeState extends State<Home> {
     setState(() {
       _medicationTypes = types;
     });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   StreamBuilder<QuerySnapshot<Map<String, dynamic>>> medications(
@@ -70,6 +94,99 @@ class _HomeState extends State<Home> {
         });
   }
 
+  StreamBuilder<QuerySnapshot<Map<String, dynamic>>> popularMedications(
+      BuildContext context) {
+    return StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection("medication")
+            .limit(3)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return ListView.builder(
+                shrinkWrap: true,
+                scrollDirection: Axis.horizontal,
+                itemCount: snapshot.data!.docs.length,
+                itemBuilder: (context, index) {
+                  Medication medication =
+                      Medication.fromJson(snapshot.data!.docs[index].data());
+                  return medicationcard(medication, context);
+                });
+          }
+          return const SizedBox();
+        });
+  }
+
+  Widget actionsHub() {
+    return GridView(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 10.0,
+        mainAxisSpacing: 10,
+        childAspectRatio: 1.5,
+      ),
+      children: [
+        InkWell(
+          onTap: () {
+            Get.to(Medications(userID: user!.userID));
+          },
+          child: Stack(
+            children: [
+              ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.asset("assets/images/medicines.jpg")),
+              Card(
+                color: Colors.lightBlue[50],
+                child: const Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text("Manage "),
+                ),
+              )
+            ],
+          ),
+        ),
+        InkWell(
+          onTap: () {
+            Get.to(const OrderMedication());
+          },
+          child: Stack(
+            children: [
+              ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.asset("assets/images/buy.jpg")),
+              Card(
+                color: Colors.lightBlue[50],
+                child: const Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text("Order"),
+                ),
+              )
+            ],
+          ),
+        ),
+        InkWell(
+          onTap: () {},
+          child: Stack(
+            children: [
+              ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.asset("assets/images/report.jpeg")),
+              Card(
+                color: Colors.lightBlue[50],
+                child: const Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Text("Report"),
+                ),
+              )
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -78,7 +195,7 @@ class _HomeState extends State<Home> {
       body: SingleChildScrollView(
           child: Padding(
         padding:
-            const EdgeInsets.only(left: 20.0, right: 20, bottom: 10, top: 20),
+            const EdgeInsets.only(left: 20.0, right: 20, bottom: 10, top: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -87,7 +204,7 @@ class _HomeState extends State<Home> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const SizedBox(
+                   SizedBox(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -96,7 +213,7 @@ class _HomeState extends State<Home> {
                           style: TextStyle(
                               fontSize: 26,
                               fontWeight: FontWeight.bold,
-                              color: Colors.blue),
+                              color: Colors.blueAccent[700]),
                         ),
                         Text(
                           "+",
@@ -108,34 +225,11 @@ class _HomeState extends State<Home> {
                       ],
                     ),
                   ),
-                  Container(
-                    height: 40,
-                    width: width * 0.5,
-                    decoration: BoxDecoration(
-                        color: Colors.lightBlue[100],
-                        borderRadius: BorderRadius.circular(10)),
-                    child: TextFormField(
-                      // controller: _typeController,
-                      decoration: const InputDecoration(
-                          contentPadding: EdgeInsets.only(bottom: 10, left: 10),
-                          suffixIconConstraints: BoxConstraints(
-                            minWidth: 0,
-                            minHeight: 3,
-                          ),
-                          suffixIcon: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 5.0),
-                            child: Icon(
-                              Icons.search,
-                            ),
-                          ),
-                          border: InputBorder.none),
-                    ),
-                  ),
                   Stack(
                     children: [
                       IconButton(
                           onPressed: () {
-                            Get.to(const Cart());
+                            Get.to(() => const Cart());
                           },
                           icon: const Icon(
                             Icons.medical_services,
@@ -145,7 +239,8 @@ class _HomeState extends State<Home> {
                           bottom: 0,
                           right: 0,
                           child: Padding(
-                            padding: const EdgeInsets.only(right: 5.0, bottom: 5),
+                            padding:
+                                const EdgeInsets.only(right: 5.0, bottom: 5),
                             child: Text("$cartItems"),
                           ))
                     ],
@@ -153,27 +248,97 @@ class _HomeState extends State<Home> {
                 ],
               ),
             ),
-            ..._medicationTypes.map((type) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            const SizedBox(
+              height: 10,
+            ),
+            Container(
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.lightBlue[50]),
+              height: height * 0.2,
+              width: width,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SizedBox(
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 5.0),
-                      child: Text(
-                        type,
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: SizedBox(
+                            width: width * 0.4,
+                            child: const Text(
+                              "Your Trusted Partner in Health",
+                              style: TextStyle(
+                                  fontSize: 22, fontWeight: FontWeight.bold),
+                            )),
                       ),
-                    ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: SizedBox(
+                          width: width * .4,
+                          child: const Text(
+                              "Caring for You, Every Step of the Way",
+                              style: TextStyle()),
+                        ),
+                      )
+                    ],
                   ),
                   SizedBox(
-                    height: height * .25,
-                    child: medications(context, type),
-                  ),
+                    height: height * 0.2,
+                    width: width * 0.4,
+                    child: Image.asset(
+                        fit: BoxFit.fitWidth, "assets/images/doctor.png"),
+                  )
                 ],
-              );
-            }),
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            SizedBox(
+              height: height * .3,
+              child: actionsHub(),
+            ),
+            const SizedBox(
+              child: Padding(
+                padding: EdgeInsets.only(left: 5.0, top: 10),
+                child: Text(
+                  "Popular Medications",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20.0),
+              child: SizedBox(
+                height: height * .25,
+                child: popularMedications(context),
+              ),
+            ),
+            // ..._medicationTypes.map((type) {
+            //   return Column(
+            //     crossAxisAlignment: CrossAxisAlignment.start,
+            //     children: [
+            //       SizedBox(
+            //         child: Padding(
+            //           padding: const EdgeInsets.only(left: 5.0),
+            //           child: Text(
+            //             type,
+            //             style: const TextStyle(
+            //                 fontSize: 22, fontWeight: FontWeight.bold),
+            //           ),
+            //         ),
+            //       ),
+            //       Padding(
+            //         padding: const EdgeInsets.only(bottom: 20.0),
+            //         child: SizedBox(
+            //           height: height * .25,
+            //           child: medications(context, type),
+            //         ),
+            //       ),
+            //     ],
+            //   );
+            // }),
           ],
         ),
       )),
@@ -187,24 +352,64 @@ class _HomeState extends State<Home> {
       onTap: () {
         Get.to(DetailsPage(medication: medication));
       },
-      child: Column(
-        children: [
-          SizedBox(
-            height: height * .22,
-            width: width * .4,
-            child: Card(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
+      child: SizedBox(
+        height: height * .22,
+        width: width * .4,
+        child: Card(
+          color: Colors.lightBlue[50],
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(20),
                 child: Image.network(
                   medication.image,
                   fit: BoxFit.cover,
                 ),
               ),
-            ),
+              Padding(
+                padding: const EdgeInsets.only(left: 10.0),
+                child: Text(
+                  medication.name,
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.only(left: 10.0),
+                child: Text("Dosage: "),
+              ),
+            ],
           ),
-          Text(medication.name)
-        ],
+        ),
       ),
+    );
+  }
+}
+
+class HomePageWrapper extends StatefulWidget {
+  @override
+  _HomePageWrapperState createState() => _HomePageWrapperState();
+}
+
+class _HomePageWrapperState extends State<HomePageWrapper> {
+  final PageController _pageController = PageController();
+  int _currentIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return PageView(
+      controller: _pageController,
+      onPageChanged: (index) {
+        setState(() {
+          _currentIndex = index;
+        });
+      },
+      children: [
+        Home(key: PageStorageKey('Home')),
+        // Add other pages here
+      ],
     );
   }
 }

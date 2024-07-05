@@ -100,7 +100,7 @@ class _AddFormState extends State<AddForm> {
       body: SingleChildScrollView(
         child: Padding(
           padding:
-              const EdgeInsets.only(top: 40.0, left: 20, right: 20, bottom: 10),
+              const EdgeInsets.only(top: 10.0, left: 20, right: 20, bottom: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -130,7 +130,7 @@ class _AddFormState extends State<AddForm> {
               // Center(child: IconButton(onPressed: () {}, icon: const Icon(Icons.add_a_photo))),
               Center(
                 child: SizedBox(
-                  height: height * 0.3,
+                  height: height * 0.25,
                   // width: width * 0.7,
                   child: imageSelected
                       ? InkWell(
@@ -149,15 +149,18 @@ class _AddFormState extends State<AddForm> {
                           )),
                 ),
               ),
+              const SizedBox(
+                height: 10,
+              ),
               const Text("Medication Name"),
               Container(
-                height: 50,
+                height: 40,
                 width: width,
                 decoration: BoxDecoration(
                     color: Colors.lightBlue[100],
                     borderRadius: BorderRadius.circular(10)),
                 child: Padding(
-                  padding: const EdgeInsets.all(20.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   child: TextFormField(
                     controller: _nameController,
                     decoration: const InputDecoration(border: InputBorder.none),
@@ -169,7 +172,7 @@ class _AddFormState extends State<AddForm> {
               ),
               const Text("Medication Type"),
               Container(
-                height: 50,
+                height: 40,
                 width: width,
                 decoration: BoxDecoration(
                   color: Colors.lightBlue[100],
@@ -223,7 +226,7 @@ class _AddFormState extends State<AddForm> {
               Align(
                 alignment: Alignment.bottomRight,
                 child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       showDialog(
                           context: context,
                           builder: (_) {
@@ -237,7 +240,15 @@ class _AddFormState extends State<AddForm> {
                         "description": _descriptionController.text
                       };
                       // Get.to(const SignUp(), transition: Transition.cupertino, duration: const Duration(seconds: 1));
-                      DatabaseMethods().addMedication(medication, _pic);
+                      String message = await DatabaseMethods()
+                          .addMedication(medication, _pic);
+                      if (message == "success") {
+                        try {} catch (e) {
+                          Get.back(canPop: true);
+                          print("Navigation failed: $e");
+                        }
+                        print("..........................$message");
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blueAccent),

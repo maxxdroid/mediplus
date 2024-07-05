@@ -3,11 +3,13 @@ class Medication {
   String type;
   String image;
   String description;
+  String id;
 
   Medication(
       {required this.name,
       required this.description,
       required this.image,
+      required this.id,
       required this.type});
 
   factory Medication.fromJson(Map<String, dynamic> json) {
@@ -15,6 +17,7 @@ class Medication {
         name: json['name'],
         type: json['type'],
         image: json['image'],
+        id: json['id'],
         description: json['description']);
   }
 
@@ -24,6 +27,7 @@ class Medication {
       'type': type,
       'description': description,
       'image': image,
+      'id' : id
     };
   }
 
@@ -35,7 +39,8 @@ class Medication {
         other.name == name &&
         other.type == type &&
         other.image == image &&
-        other.description == description;
+        other.description == description &&
+        other.id == id;
   }
 
   @override
@@ -43,6 +48,7 @@ class Medication {
     return name.hashCode ^
         type.hashCode ^
         image.hashCode ^
-        description.hashCode;
+        description.hashCode ^
+        id.hashCode;
   }
 }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:mediplus/database/db.dart';
 import 'package:mediplus/functions/shared_pref_helper.dart';
 import 'package:mediplus/models/medication.dart';
+import 'package:mediplus/models/user.dart';
+import 'package:mediplus/widgets/loading_alert.dart';
 
 class Cart extends StatefulWidget {
   const Cart({super.key});
@@ -13,12 +16,14 @@ class _CartState extends State<Cart> {
   bool inCart = false;
   List<Medication> cart = [];
   int cartItems = 0;
-  String? userID = "";
+  LocalUser? user =
+      LocalUser(name: "", role: "", imageUrl: "", userID: "", email: "");
 
   @override
   void initState() {
-    _getUserId();
+    // _getUserId();
     _loadcart();
+    _getUser();
     super.initState();
   }
 
@@ -27,8 +32,9 @@ class _CartState extends State<Cart> {
     super.dispose();
   }
 
-  Future<void> _getUserId() async {
-    userID = await Sharedprefhelper().getUserID();
+  Future<void> _getUser() async {
+    user = await Sharedprefhelper().getUser();
+    print('Error fetching user info: ${user!.email}');
   }
 
   Future<void> _loadcart() async {
@@ -46,6 +52,14 @@ class _CartState extends State<Cart> {
     await Sharedprefhelper().saveMedicationCart(cart);
   }
 
+  void emptyCart() async {
+    setState(() {
+      cart = [];
+      cartItems = cart.length;
+    });
+    await Sharedprefhelper().saveMedicationCart(cart);
+  }
+
   @override
   Widget build(BuildContext context) {
     var height = MediaQuery.of(context).size.height;
@@ -56,8 +70,34 @@ class _CartState extends State<Cart> {
         height: 50,
         child: FloatingActionButton(
           backgroundColor: Colors.blue,
-          onPressed: () {},
-          child: const Text("Order Medication", style: TextStyle(color: Colors.white),),
+          onPressed: () async {
+            Map<String, dynamic> orderInfoMap = {
+              "userID": user!.userID,
+              "email": user!.email,
+              "name": user!.name,
+              "medications":
+                  cart.map((medication) => medication.toJson()).toList(),
+              "status": "pending",
+              "date": DateTime.now()
+            };
+            showDialog(
+                context: context,
+                builder: (_) {
+                  return const LoadingAlert(
+                    message: 'Creating Order',
+                  );
+                });
+            List<String> medicationIds = cart.map((med) => med.id).toList();
+            String message = await DatabaseMethods().addOrderInfo(orderInfoMap);
+            if (message == "success") {
+              emptyCart();
+              print(".............$message");
+            }
+          },
+          child: const Text(
+            "Order Medication",
+            style: TextStyle(color: Colors.white),
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -90,6 +130,11 @@ class _CartState extends State<Cart> {
                           ),
                         ],
                       ),
+                    ),
+                    const Text(
+                      "Cart",
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                     ),
                     Stack(
                       children: [
@@ -187,7 +232,7 @@ class _CartState extends State<Cart> {
           bottom: 0,
           right: 0,
           child: Container(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             width: width,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,

@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:mediplus/database/db.dart';
 import 'package:mediplus/functions/shared_pref_helper.dart';
+import 'package:mediplus/models/user.dart';
 import 'package:mediplus/screens/tabs/page_tabs.dart';
 
 class AuthMethods {
@@ -17,16 +19,17 @@ class AuthMethods {
       User? firebaseUser = userCredential.user;
 
       if (firebaseUser != null) {
-        Map<String, dynamic> userInfoMap = {
-          "Email": email,
-          "Name": name,
-          "imgUrl": "",
-          "User Id": firebaseUser.uid,
-        };
+        LocalUser user = LocalUser(
+            name: name,
+            role: "role",
+            imageUrl: "",
+            userID: firebaseUser.uid,
+            email: email);
 
-        await DatabaseMethods().addUserInfo(firebaseUser.uid, userInfoMap);
+        await DatabaseMethods().addUserInfo(firebaseUser.uid, user.toJson());
         await Sharedprefhelper().saveUserID(firebaseUser.uid);
-        Get.to(const PageTabs(),
+        await Sharedprefhelper().saveUser(user);
+        Get.to(PageTabs(user: user,),
             transition: Transition.cupertino,
             duration: const Duration(seconds: 1));
       }
@@ -44,12 +47,26 @@ class AuthMethods {
       User? firebaseUser = userCredential.user;
 
       if (firebaseUser != null) {
-        await Sharedprefhelper().saveUserID(firebaseUser.uid);
-        Get.to(
-          const PageTabs(),
-          transition: Transition.cupertino,
-          duration: const Duration(seconds: 1),
-        );
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(firebaseUser.uid)
+            .get();
+
+        if (userDoc.exists) {
+          Map<String, dynamic> userInfoMap =
+              userDoc.data() as Map<String, dynamic>;
+          LocalUser localUser = LocalUser.fromJson(userInfoMap);
+
+          await Sharedprefhelper().saveUser(localUser);
+
+          await Sharedprefhelper().saveUserID(firebaseUser.uid);
+
+          Get.to(
+            PageTabs(user: localUser,),
+            transition: Transition.cupertino,
+            duration: const Duration(seconds: 1),
+          );
+        }
       }
     } catch (error) {
       errorHandling(error);
