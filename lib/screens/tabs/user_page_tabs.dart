@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mediplus/functions/shared_pref_helper.dart';
 import 'package:mediplus/models/user.dart';
-import 'package:mediplus/screens/tabs/add_medication/add.dart';
+import 'package:mediplus/screens/tabs/add.dart';
 import 'package:mediplus/screens/tabs/admin_home.dart';
 import 'package:mediplus/screens/tabs/medications.dart';
 import 'package:mediplus/screens/tabs/orders.dart';
@@ -78,7 +78,6 @@ class _UserPageTabs extends State<UserPageTabs> {
           children: [
             const Home(key: PageStorageKey('Home')),
             const Orders(),
-            const AddForm(),
             Medications(
               userID: userID,
             ),

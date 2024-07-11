@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:mediplus/models/medication.dart';
-import 'package:mediplus/models/orders.dart';
 
 class DatabaseMethods {
   addUserInfo(String userId, Map<String, dynamic> userInfoMap) {
@@ -31,29 +30,51 @@ class DatabaseMethods {
     }
   }
 
-  Future<String> approveOrder(List<Medication> medications, String userId) async {
-  WriteBatch batch = FirebaseFirestore.instance.batch();
+  Future<String> addReport(Map<String, dynamic>report) async {
+    FirebaseFirestore.instance.settings =
+        const Settings(persistenceEnabled: true);
+    String dVariable = DateTime.now().microsecondsSinceEpoch.toString();
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+    report["reportId"] = dVariable;
 
-  try {
-    // Iterate through medications and add each one to Firestore
-    for (Medication medication in medications) {
-      String dVariable = DateTime.now().microsecondsSinceEpoch.toString();
-      DocumentReference medRef = FirebaseFirestore.instance
-          .collection("users")
-          .doc(userId)
-          .collection("medications")
-          .doc(dVariable);
-      batch.set(medRef, medication.toJson());
+    DocumentReference orderRef =
+        FirebaseFirestore.instance.collection("reports").doc(dVariable);
+    batch.set(orderRef, report);
+
+    try {
+      await batch.commit();
+      print("Report successfully added!");
+      return 'success';
+    } catch (e) {
+      print("Failed to add report: $e");
+      return 'fail';
     }
-
-    await batch.commit();
-    print("Medications successfully added!");
-    return 'success';
-  } catch (e) {
-    print("Failed to add medications: $e");
-    return 'fail';
   }
-}
+
+  Future<String> approveOrder(
+      List<Medication> medications, String userId) async {
+    WriteBatch batch = FirebaseFirestore.instance.batch();
+
+    try {
+      // Iterate through medications and add each one to Firestore
+      for (Medication medication in medications) {
+        String dVariable = DateTime.now().microsecondsSinceEpoch.toString();
+        DocumentReference medRef = FirebaseFirestore.instance
+            .collection("users")
+            .doc(userId)
+            .collection("medications")
+            .doc(dVariable);
+        batch.set(medRef, medication.toJson());
+      }
+
+      await batch.commit();
+      print("Medications successfully added!");
+      return 'success';
+    } catch (e) {
+      print("Failed to add medications: $e");
+      return 'fail';
+    }
+  }
 
   // Future<String> approveOrder(OrdersModel order,) async {
   //   WriteBatch batch = FirebaseFirestore.instance.batch();

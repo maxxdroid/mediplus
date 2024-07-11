@@ -2,9 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mediplus/functions/shared_pref_helper.dart';
 import 'package:mediplus/models/user.dart';
-import 'package:mediplus/screens/tabs/add_medication/add.dart';
 import 'package:mediplus/screens/tabs/admin_home.dart';
-import 'package:mediplus/screens/tabs/medications.dart';
 import 'package:mediplus/screens/tabs/orders.dart';
 import 'package:mediplus/screens/tabs/profile.dart';
 
@@ -71,17 +69,11 @@ class _PageTabsState extends State<PageTabs> {
               pageIndex = index;
             });
             if (index == 0) {
-              // Refresh the Home page state when it becomes visible
-              // (Home).createState()._loadcart();
             }
           },
           children: [
             const Home(key: PageStorageKey('Home')),
             const Orders(),
-            const AddForm(),
-            Medications(
-              userID: userID,
-            ),
             Profile(
               user: widget.user,
             ),
@@ -107,11 +99,6 @@ class _PageTabsState extends State<PageTabs> {
             BottomNavigationBarItem(icon: Icon(Icons.house), label: 'Home'),
             BottomNavigationBarItem(
                 icon: Icon(Icons.medical_information_sharp), label: 'Orders'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.add_circle_outline_outlined),
-                label: 'Add Medication'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.medication), label: 'Medications'),
             BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
           ],
         ),

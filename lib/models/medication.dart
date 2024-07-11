@@ -4,12 +4,14 @@ class Medication {
   String image;
   String description;
   String id;
+  String dosage;
 
   Medication(
       {required this.name,
       required this.description,
       required this.image,
       required this.id,
+      required this.dosage,
       required this.type});
 
   factory Medication.fromJson(Map<String, dynamic> json) {
@@ -17,6 +19,7 @@ class Medication {
         name: json['name'],
         type: json['type'],
         image: json['image'],
+        dosage: json['dosage'],
         id: json['id'],
         description: json['description']);
   }
@@ -27,7 +30,8 @@ class Medication {
       'type': type,
       'description': description,
       'image': image,
-      'id' : id
+      'id': id,
+      'dosage': dosage
     };
   }
 
@@ -40,6 +44,7 @@ class Medication {
         other.type == type &&
         other.image == image &&
         other.description == description &&
+        other.dosage == dosage &&
         other.id == id;
   }
 
@@ -49,6 +54,7 @@ class Medication {
         type.hashCode ^
         image.hashCode ^
         description.hashCode ^
+        dosage.hashCode ^
         id.hashCode;
   }
 }

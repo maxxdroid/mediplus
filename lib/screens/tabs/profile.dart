@@ -15,21 +15,6 @@ class _ProfileState extends State<Profile> {
     super.initState();
   }
 
-  // Future<void> fetchUserInfo(String id) async {
-  //   try {
-  //     DocumentSnapshot userDoc =
-  //         await FirebaseFirestore.instance.collection('users').doc(id).get();
-
-  //     if (userDoc.exists) {
-  //       setState(() {
-  //         userInfo = userDoc.data() as Map<String, dynamic>?;
-  //       });
-  //     }
-  //   } catch (e) {
-  //     print('Error fetching user info: $e');
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,7 +74,7 @@ class _ProfileState extends State<Profile> {
                   width: 10,
                 ),
                 Text(
-                  widget.user.name,
+                  widget.user.email,
                   style: TextStyle(
                       color: Colors.grey[400], fontSize: 18, letterSpacing: 1),
                 ),

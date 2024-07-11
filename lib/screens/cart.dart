@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 import 'package:mediplus/database/db.dart';
 import 'package:mediplus/functions/shared_pref_helper.dart';
 import 'package:mediplus/models/medication.dart';
 import 'package:mediplus/models/user.dart';
+import 'package:mediplus/screens/tabs/admin_page_tabs.dart';
 import 'package:mediplus/widgets/loading_alert.dart';
 
 class Cart extends StatefulWidget {
@@ -34,7 +37,7 @@ class _CartState extends State<Cart> {
 
   Future<void> _getUser() async {
     user = await Sharedprefhelper().getUser();
-    print('Error fetching user info: ${user!.email}');
+    print('Fetching user info: ${user!.email}');
   }
 
   Future<void> _loadcart() async {
@@ -71,27 +74,35 @@ class _CartState extends State<Cart> {
         child: FloatingActionButton(
           backgroundColor: Colors.blue,
           onPressed: () async {
-            Map<String, dynamic> orderInfoMap = {
-              "userID": user!.userID,
-              "email": user!.email,
-              "name": user!.name,
-              "medications":
-                  cart.map((medication) => medication.toJson()).toList(),
-              "status": "pending",
-              "date": DateTime.now()
-            };
-            showDialog(
-                context: context,
-                builder: (_) {
-                  return const LoadingAlert(
-                    message: 'Creating Order',
-                  );
-                });
-            List<String> medicationIds = cart.map((med) => med.id).toList();
-            String message = await DatabaseMethods().addOrderInfo(orderInfoMap);
-            if (message == "success") {
-              emptyCart();
-              print(".............$message");
+            if (cart.isNotEmpty) {
+              Map<String, dynamic> orderInfoMap = {
+                "userID": user!.userID,
+                "email": user!.email,
+                "name": user!.name,
+                "medications":
+                    cart.map((medication) => medication.toJson()).toList(),
+                "status": "pending",
+                "date": DateTime.now()
+              };
+              showDialog(
+                  context: context,
+                  builder: (_) {
+                    return const LoadingAlert(
+                      message: 'Creating Order',
+                    );
+                  });
+              List<String> medicationIds = cart.map((med) => med.id).toList();
+              String message =
+                  await DatabaseMethods().addOrderInfo(orderInfoMap);
+              if (message == "success") {
+                emptyCart();
+                Get.to(() => PageTabs(
+                      user: user!,
+                    ));
+                print(".............$message");
+              } else {
+                Fluttertoast.showToast(msg: "Empty Cart");
+              }
             }
           },
           child: const Text(
@@ -198,16 +209,21 @@ class _CartState extends State<Cart> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        medication.name,
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                      SizedBox(
+                        width: width * .5,
+                        child: Text(
+                          medication.name,
+                          style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              overflow: TextOverflow.ellipsis),
+                        ),
                       ),
                       const SizedBox(
                         width: 10,
                       ),
                       SizedBox(
-                        width: 120,
+                        width: width * .5,
                         height: 30,
                         child: Text(
                           medication.description,

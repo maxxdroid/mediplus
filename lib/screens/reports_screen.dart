@@ -1,26 +1,34 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mediplus/functions/shared_pref_helper.dart';
 import 'package:mediplus/models/medication.dart';
-import 'package:mediplus/models/user.dart';
-import 'package:mediplus/screens/details_page.dart';
-import 'package:mediplus/screens/mamage_medications_details.dart';
+import 'package:mediplus/screens/cart.dart';
 
-class Medications extends StatefulWidget {
-  String userID;
-  Medications({super.key, required this.userID});
+class ReportScreen extends StatefulWidget {
+  const ReportScreen({super.key});
 
   @override
-  State<Medications> createState() => _MedicationsState();
+  State<ReportScreen> createState() => _ReportScreenState();
 }
 
-class _MedicationsState extends State<Medications> {
-  LocalUser? user =
-      LocalUser(name: "", role: "", imageUrl: "", userID: "", email: "");
+class _ReportScreenState extends State<ReportScreen> {
+  List<String> _medicationTypes = [];
+  bool inCart = false;
+  List<Medication> cart = [];
+  int cartItems = 0;
 
   @override
   void initState() {
+    _loadcart();
     super.initState();
+    // fetchMedicationTypes();
+  }
+
+  Future<void> _loadcart() async {
+    cart = await Sharedprefhelper().getCurrentMedicationCart();
+    setState(() {
+      cartItems = cart.length;
+    });
   }
 
   @override
@@ -30,8 +38,9 @@ class _MedicationsState extends State<Medications> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.only(top: 30.0, left: 20, right: 20),
+          padding: EdgeInsets.only(left: 20.0, right: 20, bottom: 10, top: 30),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
                 width: width,
@@ -62,20 +71,23 @@ class _MedicationsState extends State<Medications> {
                     Stack(
                       children: [
                         IconButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Get.to(const Cart());
+                            },
                             icon: const Icon(
                               Icons.medical_services,
                               color: Colors.blue,
                             )),
-                        const Positioned(
+                        Positioned(
                             bottom: 0,
                             right: 0,
                             child: Padding(
-                              padding: EdgeInsets.only(right: 5.0, bottom: 5),
-                              child: Text(""),
+                              padding:
+                                  const EdgeInsets.only(right: 5.0, bottom: 5),
+                              child: Text("$cartItems"),
                             ))
                       ],
-                    ),
+                    )
                   ],
                 ),
               ),
@@ -90,7 +102,7 @@ class _MedicationsState extends State<Medications> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20),
                       child: Image.asset(
-                          fit: BoxFit.fitWidth, "assets/images/medicines.jpg"),
+                          fit: BoxFit.fitWidth, "assets/images/report.jpeg"),
                     ),
                   ),
                   Container(
@@ -114,7 +126,7 @@ class _MedicationsState extends State<Medications> {
                                     child: const Padding(
                                       padding: EdgeInsets.all(8.0),
                                       child: Text(
-                                        "Manage Your Prescriptions",
+                                        "Your Reports on Meds",
                                         style: TextStyle(
                                             fontSize: 22,
                                             fontWeight: FontWeight.bold,
@@ -130,87 +142,8 @@ class _MedicationsState extends State<Medications> {
                   ),
                 ],
               ),
-              SizedBox(
-                  height: height * .9,
-                  child: medications(context, widget.userID))
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  StreamBuilder<QuerySnapshot<Map<String, dynamic>>> medications(
-      BuildContext context, String userID) {
-    return StreamBuilder(
-        stream: FirebaseFirestore.instance
-            .collection("users")
-            .doc(userID)
-            .collection("medications")
-            .snapshots(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10.0,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: .7,
-                ),
-                shrinkWrap: true,
-                itemCount: snapshot.data!.docs.length,
-                itemBuilder: (context, index) {
-                  Medication medication =
-                      Medication.fromJson(snapshot.data!.docs[index].data());
-                  return medicationcard(medication, context);
-                });
-          }
-          return const SizedBox();
-        });
-  }
-
-  Widget medicationcard(Medication medication, BuildContext context) {
-    var height = MediaQuery.of(context).size.height;
-    var width = MediaQuery.of(context).size.width;
-    return InkWell(
-      onTap: () {
-        Get.to(ManageDetailsPage(medication: medication, user: user!,));
-      },
-      child: SizedBox(
-        height: height * .22,
-        width: width * .4,
-        child: Card(
-          color: Colors.lightBlue[50],
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: Image.network(
-                  medication.image,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 10.0, top: 5, bottom: 5),
-                child: SizedBox(
-                  width: width * 3,
-                  child: Text(
-                    medication.name,
-                    style: const TextStyle(fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis),
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 10.0),
-                child: SizedBox(
-                  width: width * 3,
-                    child: Text(
-                  "Dosage: ${medication.dosage}",
-                  style: const TextStyle(overflow: TextOverflow.ellipsis),
-                )),
+              const SizedBox(
+                height: 10,
               ),
             ],
           ),

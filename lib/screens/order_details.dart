@@ -65,16 +65,21 @@ class _OrderDetailsState extends State<OrderDetails> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        medication.name,
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                      SizedBox(
+                        width: width * .5,
+                        child: Text(
+                          medication.name,
+                          style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              overflow: TextOverflow.ellipsis),
+                        ),
                       ),
                       const SizedBox(
                         width: 10,
                       ),
                       SizedBox(
-                        width: 120,
+                        width: width * .5,
                         height: 30,
                         child: Text(
                           medication.description,
@@ -108,14 +113,6 @@ class _OrderDetailsState extends State<OrderDetails> {
                 SizedBox(
                   width: width * .3,
                 ),
-                IconButton(
-                    onPressed: () {
-                      // remove(medication);
-                    },
-                    icon: const Icon(
-                      Icons.delete,
-                      color: Colors.red,
-                    ))
               ],
             ),
           ),
@@ -123,8 +120,6 @@ class _OrderDetailsState extends State<OrderDetails> {
       ],
     );
   }
-
- 
 
   @override
   Widget build(BuildContext context) {

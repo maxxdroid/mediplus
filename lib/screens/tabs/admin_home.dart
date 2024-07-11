@@ -7,7 +7,10 @@ import 'package:mediplus/models/user.dart';
 import 'package:mediplus/screens/cart.dart';
 import 'package:mediplus/screens/details_page.dart';
 import 'package:mediplus/screens/order_medication.dart';
+import 'package:mediplus/screens/reports_screen.dart';
+import 'package:mediplus/screens/tabs/add.dart';
 import 'package:mediplus/screens/tabs/medications.dart';
+import 'package:intl/intl.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -18,6 +21,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> with WidgetsBindingObserver {
   List<String> _medicationTypes = [];
+  
   bool inCart = false;
   List<Medication> cart = [];
   int cartItems = 0;
@@ -138,10 +142,10 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   borderRadius: BorderRadius.circular(10),
                   child: Image.asset("assets/images/medicines.jpg")),
               Card(
-                color: Colors.lightBlue[50],
+                color: Colors.lightBlue[50]!.withOpacity(.8),
                 child: const Padding(
                   padding: EdgeInsets.all(8),
-                  child: Text("Manage "),
+                  child: Text("My Prescriptions"),
                 ),
               )
             ],
@@ -157,7 +161,7 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
                   borderRadius: BorderRadius.circular(10),
                   child: Image.asset("assets/images/buy.jpg")),
               Card(
-                color: Colors.lightBlue[50],
+                color: Colors.lightBlue[50]!.withOpacity(.8),
                 child: const Padding(
                   padding: EdgeInsets.all(8),
                   child: Text("Order"),
@@ -167,17 +171,19 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
           ),
         ),
         InkWell(
-          onTap: () {},
+          onTap: () {
+            Get.to(()=> const ReportScreen());
+          },
           child: Stack(
             children: [
               ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: Image.asset("assets/images/report.jpeg")),
               Card(
-                color: Colors.lightBlue[50],
+                color: Colors.lightBlue[50]!.withOpacity(.8),
                 child: const Padding(
                   padding: EdgeInsets.all(8),
-                  child: Text("Report"),
+                  child: Text("My Reports"),
                 ),
               )
             ],
@@ -185,15 +191,15 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         ),
         InkWell(
           onTap: () {
-            Get.to(const OrderMedication());
+            Get.to(() => AddForm(user: user!,));
           },
           child: Stack(
             children: [
               ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: Image.asset("assets/images/buy.jpg")),
+                  child: Image.asset("assets/images/add1.jpg")),
               Card(
-                color: Colors.lightBlue[50],
+                color: Colors.lightBlue[50]!.withOpacity(.8),
                 child: const Padding(
                   padding: EdgeInsets.all(8),
                   child: Text("Add Medication"),
@@ -366,14 +372,22 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 10.0),
-                child: Text(
-                  medication.name,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                child: SizedBox(
+                  width: width * 3,
+                  child: Text(
+                    medication.name,
+                    style: const TextStyle(fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis),
+                  ),
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.only(left: 10.0),
-                child: Text("Dosage: "),
+              Padding(
+                padding: const EdgeInsets.only(left: 10.0),
+                child: SizedBox(
+                  width: width * 3,
+                    child: Text(
+                  "Dosage: ${medication.dosage}",
+                  style: const TextStyle(overflow: TextOverflow.ellipsis),
+                )),
               ),
             ],
           ),

@@ -4,10 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mediplus/database/db.dart';
+import 'package:mediplus/models/user.dart';
+import 'package:mediplus/screens/tabs/admin_page_tabs.dart';
 import 'package:mediplus/widgets/loading_alert.dart';
 
 class AddForm extends StatefulWidget {
-  const AddForm({super.key});
+  final LocalUser user;
+  const AddForm({super.key, required this.user});
 
   @override
   State<AddForm> createState() => _AddFormState();
@@ -16,6 +19,7 @@ class AddForm extends StatefulWidget {
 class _AddFormState extends State<AddForm> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _dosageController = TextEditingController();
 
   String? _selectedMedicationType;
   final List<String> _medicationTypes = [
@@ -100,7 +104,7 @@ class _AddFormState extends State<AddForm> {
       body: SingleChildScrollView(
         child: Padding(
           padding:
-              const EdgeInsets.only(top: 10.0, left: 20, right: 20, bottom: 10),
+              const EdgeInsets.only(top: 30.0, left: 20, right: 20, bottom: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -127,7 +131,6 @@ class _AddFormState extends State<AddForm> {
               const SizedBox(
                 height: 10,
               ),
-              // Center(child: IconButton(onPressed: () {}, icon: const Icon(Icons.add_a_photo))),
               Center(
                 child: SizedBox(
                   height: height * 0.25,
@@ -149,10 +152,10 @@ class _AddFormState extends State<AddForm> {
                           )),
                 ),
               ),
-              const SizedBox(
-                height: 10,
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text("Name"),
               ),
-              const Text("Medication Name"),
               Container(
                 height: 40,
                 width: width,
@@ -167,10 +170,28 @@ class _AddFormState extends State<AddForm> {
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 10,
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text("Dosage"),
               ),
-              const Text("Medication Type"),
+              Container(
+                height: 40,
+                width: width,
+                decoration: BoxDecoration(
+                    color: Colors.lightBlue[100],
+                    borderRadius: BorderRadius.circular(10)),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: TextFormField(
+                    controller: _dosageController,
+                    decoration: const InputDecoration(border: InputBorder.none),
+                  ),
+                ),
+              ),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text("Type"),
+              ),
               Container(
                 height: 40,
                 width: width,
@@ -200,11 +221,10 @@ class _AddFormState extends State<AddForm> {
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 20,
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text("Descrirption"),
               ),
-              const Text("Descrirption"),
-              const Text("Add a pill description if possible"),
               Container(
                 height: 150,
                 width: width,
@@ -237,16 +257,14 @@ class _AddFormState extends State<AddForm> {
                       Map<String, dynamic> medication = {
                         "name": _nameController.text,
                         "type": _selectedMedicationType,
+                        "dosage": _dosageController.text,
                         "description": _descriptionController.text
                       };
                       // Get.to(const SignUp(), transition: Transition.cupertino, duration: const Duration(seconds: 1));
                       String message = await DatabaseMethods()
                           .addMedication(medication, _pic);
                       if (message == "success") {
-                        try {} catch (e) {
-                          Get.back(canPop: true);
-                          print("Navigation failed: $e");
-                        }
+                        Get.off(()=> PageTabs(user: widget.user));
                         print("..........................$message");
                       }
                     },

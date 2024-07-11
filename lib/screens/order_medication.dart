@@ -27,10 +27,6 @@ class _HomeState extends State<OrderMedication> {
     fetchMedicationTypes();
   }
 
-  // Future<void> _getUserId() async {
-  //   userID = await Sharedprefhelper().getUserID();
-  // }
-
   Future<void> _loadcart() async {
     cart = await Sharedprefhelper().getCurrentMedicationCart();
     setState(() {
@@ -159,12 +155,16 @@ class _HomeState extends State<OrderMedication> {
                         children: [
                           Padding(
                             padding: const EdgeInsets.all(8.0),
-                            child: SizedBox(
-                                width: width * 0.4,
-                                child: const Text(
-                                  "Order from Us",
-                                  style: TextStyle(
-                                      fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blue),
+                            child: Card(
+                              color: Colors.white.withOpacity(.7),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: const Text(
+                                    "Order from Us",
+                                    style: TextStyle(
+                                        fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blue),
+                                  ),
                                 )),
                           ),
                           Padding(
@@ -252,14 +252,22 @@ class _HomeState extends State<OrderMedication> {
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 10.0),
-                child: Text(
-                  medication.name,
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                child: SizedBox(
+                  width: width * 3,
+                  child: Text(
+                    medication.name,
+                    style: const TextStyle(fontWeight: FontWeight.w600,overflow: TextOverflow.ellipsis),
+                  ),
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.only(left: 10.0),
-                child: Text("Dosage: "),
+              Padding(
+                padding: const EdgeInsets.only(left: 10.0),
+                child: SizedBox(
+                  width: width * 3,
+                    child: Text(
+                  "Dosage: ${medication.dosage}",
+                  style: const TextStyle(overflow: TextOverflow.ellipsis),
+                )),
               ),
             ],
           ),
