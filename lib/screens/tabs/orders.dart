@@ -239,7 +239,6 @@ class _HistoryState extends State<Orders> {
                       children: [
                         IconButton(
                             onPressed: () {
-                              Get.to(const Cart());
                             },
                             icon: const Icon(
                               Icons.medical_services,
