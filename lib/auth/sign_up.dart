@@ -72,22 +72,23 @@ class _SignUpState extends State<SignUp> {
                   color: Colors.blueGrey[100],
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                        labelText: "  Full Name",
-                        labelStyle: TextStyle(fontSize: 13),
-                        border: InputBorder.none,
-                        prefixIcon: Icon(Icons.person, color: Colors.blue),
-                        prefixIconConstraints: BoxConstraints(
-                          minWidth: 0,
-                          minHeight: 0,
-                        ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: "  Full Name",
+                      labelStyle: TextStyle(fontSize: 13),
+                      border: InputBorder.none,
+                      prefixIcon: Padding(
+                        padding: EdgeInsets.only(right: 10),
+                        child: Icon(Icons.person, color: Colors.blue),
                       ),
-                      controller: _nameController,
+                      prefixIconConstraints: BoxConstraints(
+                        minWidth: 0,
+                        minHeight: 0,
+                      ),
                     ),
+                    controller: _nameController,
                   ),
                 ),
               ),
@@ -97,22 +98,24 @@ class _SignUpState extends State<SignUp> {
                   color: Colors.blueGrey[100],
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                        labelText: "  Email",
-                        labelStyle: TextStyle(fontSize: 13),
-                        border: InputBorder.none,
-                        prefixIcon: Icon(Icons.mail, color: Colors.blue),
-                        prefixIconConstraints: BoxConstraints(
-                          minWidth: 0,
-                          minHeight: 0,
-                        ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: TextFormField(
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: const InputDecoration(
+                      labelText: "  Email",
+                      labelStyle: TextStyle(fontSize: 13),
+                      border: InputBorder.none,
+                      prefixIcon: Padding(
+                        padding: EdgeInsets.only(right: 10),
+                        child: Icon(Icons.mail, color: Colors.blue),
                       ),
-                      controller: _eamilController,
+                      prefixIconConstraints: BoxConstraints(
+                        minWidth: 0,
+                        minHeight: 0,
+                      ),
                     ),
+                    controller: _eamilController,
                   ),
                 ),
               ),
@@ -123,39 +126,39 @@ class _SignUpState extends State<SignUp> {
                   color: Colors.blueGrey[100],
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: TextFormField(
-                      obscureText: obscured,
-                      decoration: InputDecoration(
-                        labelText: "  Password",
-                        labelStyle: const TextStyle(fontSize: 13),
-                        border: InputBorder.none,
-                        suffixIcon: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                if (obscured) {
-                                  obscured = false;
-                                } else {
-                                  obscured = true;
-                                }
-                              });
-                            },
-                            icon: obscured
-                                ? const Icon(Icons.visibility,
-                                    color: Colors.grey)
-                                : const Icon(Icons.visibility_off,
-                                    color: Colors.grey)),
-                        prefixIcon: const Icon(Icons.lock_open_rounded,
-                            color: Colors.blue),
-                        prefixIconConstraints: const BoxConstraints(
-                          minWidth: 0,
-                          minHeight: 0,
-                        ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: TextFormField(
+                    obscureText: obscured,
+                    decoration: InputDecoration(
+                      labelText: "  Password",
+                      labelStyle: const TextStyle(fontSize: 13),
+                      border: InputBorder.none,
+                      suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              if (obscured) {
+                                obscured = false;
+                              } else {
+                                obscured = true;
+                              }
+                            });
+                          },
+                          icon: obscured
+                              ? const Icon(Icons.visibility, color: Colors.grey)
+                              : const Icon(Icons.visibility_off,
+                                  color: Colors.grey)),
+                      prefixIcon: const Padding(
+                        padding: EdgeInsets.only(right: 10),
+                        child:
+                            Icon(Icons.lock_open_rounded, color: Colors.blue),
                       ),
-                      controller: _passwordController,
+                      prefixIconConstraints: const BoxConstraints(
+                        minWidth: 0,
+                        minHeight: 0,
+                      ),
                     ),
+                    controller: _passwordController,
                   ),
                 ),
               ),
@@ -165,41 +168,45 @@ class _SignUpState extends State<SignUp> {
                   color: Colors.blueGrey[100],
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: TextFormField(
-                      obscureText: confirmObscured,
-                      decoration: InputDecoration(
-                        labelText: "  Confirm Password",
-                        labelStyle: const TextStyle(fontSize: 13),
-                        border: InputBorder.none,
-                        prefixIcon: const Icon(Icons.lock_outline_rounded,
-                            color: Colors.blue),
-                        suffixIcon: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                if (confirmObscured) {
-                                  confirmObscured = false;
-                                } else {
-                                  confirmObscured = true;
-                                }
-                              });
-                            },
-                            icon: confirmObscured
-                                ? const Icon(
-                                    Icons.visibility,
-                                    color: Colors.grey,
-                                  )
-                                : const Icon(Icons.visibility_off,
-                                    color: Colors.grey)),
-                        prefixIconConstraints: const BoxConstraints(
-                          minWidth: 0,
-                          minHeight: 0,
-                        ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: TextFormField(
+                    obscureText: confirmObscured,
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.only(
+                        bottom: 10,
                       ),
-                      controller: _confirmPasswordController,
+                      labelText: "  Confirm Password",
+                      labelStyle: const TextStyle(fontSize: 13),
+                      border: InputBorder.none,
+                      prefixIcon: const Padding(
+                        padding: EdgeInsets.only(right: 10),
+                        child: Icon(Icons.lock_outline_rounded,
+                            color: Colors.blue),
+                      ),
+                      suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              if (confirmObscured) {
+                                confirmObscured = false;
+                              } else {
+                                confirmObscured = true;
+                              }
+                            });
+                          },
+                          icon: confirmObscured
+                              ? const Icon(
+                                  Icons.visibility,
+                                  color: Colors.grey,
+                                )
+                              : const Icon(Icons.visibility_off,
+                                  color: Colors.grey)),
+                      prefixIconConstraints: const BoxConstraints(
+                        minWidth: 0,
+                        minHeight: 0,
+                      ),
                     ),
+                    controller: _confirmPasswordController,
                   ),
                 ),
               ),

@@ -70,22 +70,23 @@ class _SignInState extends State<SignIn> {
                   color: Colors.blueGrey[100],
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                        labelText: "  Email",
-                        labelStyle: TextStyle(fontSize: 13),
-                        border: InputBorder.none,
-                        prefixIcon: Icon(Icons.mail, color: Colors.blue),
-                        prefixIconConstraints: BoxConstraints(
-                          minWidth: 0,
-                          minHeight: 0,
-                        ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: "  Email",
+                      labelStyle: TextStyle(fontSize: 13),
+                      border: InputBorder.none,
+                      prefixIcon: Padding(
+                        padding: EdgeInsets.only(right: 10),
+                        child: Icon(Icons.mail, color: Colors.blue),
                       ),
-                      controller: _eamilController,
+                      prefixIconConstraints: BoxConstraints(
+                        minWidth: 0,
+                        minHeight: 0,
+                      ),
                     ),
+                    controller: _eamilController,
                   ),
                 ),
               ),
@@ -96,23 +97,40 @@ class _SignInState extends State<SignIn> {
                   color: Colors.blueGrey[100],
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                        labelText: "  Password",
-                        labelStyle: TextStyle(fontSize: 13),
-                        border: InputBorder.none,
-                        prefixIcon:
-                            Icon(Icons.lock_open_rounded, color: Colors.blue),
-                        prefixIconConstraints: BoxConstraints(
-                          minWidth: 0,
-                          minHeight: 0,
-                        ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  child: TextFormField(
+                    obscureText: obscured,
+                    decoration: InputDecoration(
+                      labelText: "  Password",
+                      labelStyle: const TextStyle(fontSize: 13),
+                      suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              if (obscured) {
+                                obscured = false;
+                              } else {
+                                obscured = true;
+                              }
+                            });
+                          },
+                          icon: obscured
+                              ? const Icon(Icons.visibility, color: Colors.grey)
+                              : const Icon(Icons.visibility_off,
+                                  color: Colors.grey)),
+                      // contentPadding: EdgeInsets.only(bottom: 10, ),
+                      border: InputBorder.none,
+                      prefixIconConstraints: const BoxConstraints(
+                        minWidth: 0,
+                        minHeight: 0,
                       ),
-                      controller: _passwordController,
+                      prefixIcon: const Padding(
+                        padding: EdgeInsets.only(right: 10),
+                        child:
+                            Icon(Icons.lock_open_rounded, color: Colors.blue),
+                      ),
                     ),
+                    controller: _passwordController,
                   ),
                 ),
               ),
@@ -123,7 +141,7 @@ class _SignInState extends State<SignIn> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        const Text("Do'nt have an account? "),
+                        const Text("Don't have an account? "),
                         GestureDetector(
                             onTap: () {
                               Get.off(const SignUp(),
@@ -149,7 +167,8 @@ class _SignInState extends State<SignIn> {
                             message: 'Logging in please wait...',
                           );
                         });
-                    AuthMethods().signIn(_eamilController.text, _passwordController.text);
+                    AuthMethods().signIn(
+                        _eamilController.text, _passwordController.text);
                   },
                   style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blueAccent),

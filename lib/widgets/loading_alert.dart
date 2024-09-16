@@ -12,7 +12,7 @@ class LoadingAlert extends StatelessWidget {
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const CircularProgressIndicator(color: Colors.blue, strokeWidth: 30),
+          const CircularProgressIndicator(color: Colors.blue, strokeWidth: 10),
           const SizedBox(
             height: 10,
           ),

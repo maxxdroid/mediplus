@@ -2,18 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mediplus/functions/shared_pref_helper.dart';
 import 'package:mediplus/models/medication.dart';
+import 'package:mediplus/models/user.dart';
+import 'package:mediplus/screens/add_report.dart';
 import 'package:mediplus/screens/cart.dart';
 
-class DetailsPage extends StatefulWidget {
+class ManageDetailsPage extends StatefulWidget {
+  final LocalUser user;
   final Medication medication;
 
-  const DetailsPage({super.key, required this.medication});
+  const ManageDetailsPage({super.key, required this.medication, required this.user});
 
   @override
-  State<DetailsPage> createState() => _DetailsPageState();
+  State<ManageDetailsPage> createState() => _ManageDetailsPageState();
 }
 
-class _DetailsPageState extends State<DetailsPage> {
+class _ManageDetailsPageState extends State<ManageDetailsPage> {
   bool inCart = false;
   List<Medication> cart = [];
   int cartItems = 0;
@@ -36,28 +39,6 @@ class _DetailsPageState extends State<DetailsPage> {
       inCart = cart.contains(widget.medication);
       cartItems = cart.length;
     });
-  }
-
-  void add() async {
-    setState(() {
-      if (!inCart) {
-        inCart = true;
-        cart.add(widget.medication);
-        cartItems = cart.length;
-      }
-    });
-    await Sharedprefhelper().saveMedicationCart(cart);
-  }
-
-  void remove() async {
-    setState(() {
-      if (inCart) {
-        inCart = false;
-        cart.remove(widget.medication);
-        cartItems = cart.length;
-      }
-    });
-    await Sharedprefhelper().saveMedicationCart(cart);
   }
 
   @override
@@ -133,10 +114,10 @@ class _DetailsPageState extends State<DetailsPage> {
                   ),
                   Center(
                     child: Padding(
-                      padding: EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(8.0),
                       child: Text(
                         widget.medication.name,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 22, fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -154,7 +135,7 @@ class _DetailsPageState extends State<DetailsPage> {
                             vertical: 20.0, horizontal: 20),
                         child: Text(widget.medication.dosage)),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   const Padding(
@@ -170,27 +151,24 @@ class _DetailsPageState extends State<DetailsPage> {
                             vertical: 20.0, horizontal: 20),
                         child: Text(widget.medication.description)),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   Center(
                     child: ElevatedButton(
                         onPressed: () {
-                          add();
-                          // Get.to(const PageTabs(), transition: Transition.cupertino, duration: const Duration(seconds: 1));
+                          Get.to(()=> AddReport(user: widget.user, med: widget.medication));
                         },
                         style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10)),
-                            backgroundColor: inCart
-                                ? Colors.blueGrey[100]
-                                : Colors.blueAccent),
+                            backgroundColor: Colors.blueAccent),
                         child: SizedBox(
                           width: width * 0.3,
-                          height: 50,
+                          height: 40,
                           child: const Center(
                             child: Text(
-                              "Add to Order",
+                              "Report",
                               style: TextStyle(
                                 fontSize: 18,
                                 color: Colors.white,
