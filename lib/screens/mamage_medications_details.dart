@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:mediplus/functions/shared_pref_helper.dart';
 import 'package:mediplus/models/medication.dart';
 import 'package:mediplus/models/user.dart';
-import 'package:mediplus/screens/add_report.dart';
 import 'package:mediplus/screens/cart.dart';
 
 class ManageDetailsPage extends StatefulWidget {
@@ -157,7 +156,6 @@ class _ManageDetailsPageState extends State<ManageDetailsPage> {
                   Center(
                     child: ElevatedButton(
                         onPressed: () {
-                          Get.to(()=> AddReport(user: widget.user, med: widget.medication));
                         },
                         style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(

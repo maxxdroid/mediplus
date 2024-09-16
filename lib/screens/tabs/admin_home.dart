@@ -6,10 +6,6 @@ import 'package:mediplus/models/medication.dart';
 import 'package:mediplus/models/user.dart';
 import 'package:mediplus/screens/cart.dart';
 import 'package:mediplus/screens/details_page.dart';
-import 'package:mediplus/screens/order_medication.dart';
-import 'package:mediplus/screens/reports_screen.dart';
-import 'package:mediplus/screens/tabs/add.dart';
-import 'package:mediplus/screens/tabs/medications.dart';
 import 'package:intl/intl.dart';
 
 class Home extends StatefulWidget {
@@ -134,7 +130,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
       children: [
         InkWell(
           onTap: () {
-            Get.to(Medications(userID: user!.userID));
           },
           child: Stack(
             children: [
@@ -153,7 +148,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         ),
         InkWell(
           onTap: () {
-            Get.to(const OrderMedication());
           },
           child: Stack(
             children: [
@@ -172,7 +166,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         ),
         InkWell(
           onTap: () {
-            Get.to(()=> const ReportScreen());
           },
           child: Stack(
             children: [
@@ -191,7 +184,6 @@ class _HomeState extends State<Home> with WidgetsBindingObserver {
         ),
         InkWell(
           onTap: () {
-            Get.to(() => AddForm(user: user!,));
           },
           child: Stack(
             children: [
